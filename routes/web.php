@@ -18,5 +18,6 @@ Auth::routes();
 
 Route::resource('projects','ProjectsController');
 
+
 Route::get('/home', 'HomeController@index');
 

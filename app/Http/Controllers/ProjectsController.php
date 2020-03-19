@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Project;
+use App\User;
 
 class ProjectsController extends Controller
 {
@@ -19,7 +20,8 @@ class ProjectsController extends Controller
     {
         $projects=Project::orderBy('created_at','desc')->get();
         
-        return view('home')->with('projects',$projects);
+
+        return view('home',compact('projects'));
     }
 
     /**
@@ -64,7 +66,7 @@ class ProjectsController extends Controller
      */
     public function show($id)
     {
-        $project= Project::find($id);
+        $project= Project::findOrFail($id);
         return view('projects.show')->with('project', $project);
     }
 
@@ -77,6 +79,8 @@ class ProjectsController extends Controller
     public function edit($id)
     {
         $project= Project::find($id);
+        $this->authorize('update',$project);
+
         return view('projects.edit')->with('project', $project);
     }
 
@@ -89,7 +93,11 @@ class ProjectsController extends Controller
      */
     public function update(Request $request, $id)
     {
+       
+
         $project= Project::find($id);
+        $this->authorize('update',$project);
+        
         $project->name = $request->input('name');
         $project->visibility = $request->input('visibility');
         $project->user_id = auth()->user()->id;
@@ -108,6 +116,7 @@ class ProjectsController extends Controller
     public function destroy($id)
     {
         $project=Project::find($id);
+    
         $project->delete();
         return redirect('/home')->with('success', 'Project Deleted');
     }

@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
+                <div class="card-header">Edit project:</div>
                 <div class="card-body">
                     {!!Form::open(['action' => ['ProjectsController@update', $project->id],'method' => 'POST'])!!}
                     {{Form::bsText('name',$project->name,['placeholder' => 'Company Name'])}}

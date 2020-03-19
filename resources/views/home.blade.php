@@ -4,7 +4,11 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
+                <div class="card-header">List of All Projects 
+                  <span class="float-right"><a href="/projects/create" class="btn btn-success btn-sm float-right">Add Project</a></span>
+                  <span class="float-right"><a href="/home" class="btn btn-secondary btn-sm float-right">My Projects</a></span>
+                </div>
+                
 
                 <div class="card-body">
                     @if(count($projects))
