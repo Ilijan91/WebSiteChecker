@@ -16,6 +16,7 @@
                       @foreach($projects as $project)
                         <li class="list-group-item"><a href="/projects/{{$project->id}}">{{$project->name}}</a></li>
                       @endforeach
+                     
                     </ul>
                 @else
                   <p>No Projects Found</p>

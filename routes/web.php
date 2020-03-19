@@ -17,6 +17,8 @@ Route::get('/', 'ProjectsController@index');
 Auth::routes();
 
 Route::resource('projects','ProjectsController');
+Route::get('/urls/{id}/create', 'UrlsController@create');
+Route::resource('urls','UrlsController');
 
 
 Route::get('/home', 'HomeController@index');

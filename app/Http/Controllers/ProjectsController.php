@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Project;
 use App\User;
+use App\Url;
+use DB;
 
 class ProjectsController extends Controller
 {
@@ -66,8 +68,14 @@ class ProjectsController extends Controller
      */
     public function show($id)
     {
+        
         $project= Project::findOrFail($id);
-        return view('projects.show')->with('project', $project);
+        $url = DB::table('urls')->where('project_id', $project->id)->value('url');
+        
+        return view('projects.show',compact('project','url'));
+        
+       
+        
     }
 
     /**
