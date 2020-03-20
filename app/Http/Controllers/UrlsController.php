@@ -7,6 +7,7 @@ use App\Project;
 use App\Url;
 use DB;
 
+
 class UrlsController extends Controller
 {
 
@@ -43,7 +44,7 @@ class UrlsController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'url' => ['required','url']
+            'url' => ['required','url','unique:urls']
           ]);
         
           // Create url
@@ -67,7 +68,10 @@ class UrlsController extends Controller
      */
     public function show($id)
     {
-        //
+        $project= Project::find($id);
+        $this->authorize('update',$project);
+        $urls = DB::table('urls')->where('project_id', $project->id)->get();
+        return view('urls.show',compact('urls','project'));
     }
 
     /**
@@ -78,10 +82,10 @@ class UrlsController extends Controller
      */
     public function edit($id)
     {
-        $project= Project::findOrFail($id);
-        $url = DB::table('urls')->where('project_id', $project->id)->first();
-       
-        return view('urls.edit',compact('url','project'));
+        
+        $url= Url::find($id);
+        $this->authorize('update',$url);
+        return view('urls.edit', compact('url'));
     }
 
     /**
@@ -93,7 +97,9 @@ class UrlsController extends Controller
      */
     public function update(Request $request, $id)
     {
+       
         $url= Url::find($id);
+        $this->authorize('update',$url);
     
         $url->url = $request->input('url');
         $url->check_frequency = $request->input('check_frequency');
@@ -112,6 +118,11 @@ class UrlsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $url= Url::find($id);
+        $this->authorize('update',$url);
+        $url->delete();
+        
+        return redirect('/home')->with('success', 'Url Deleted');
+        
     }
 }

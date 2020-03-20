@@ -70,9 +70,9 @@ class ProjectsController extends Controller
     {
         
         $project= Project::findOrFail($id);
-        $url = DB::table('urls')->where('project_id', $project->id)->value('url');
+        $urls = DB::table('urls')->where('project_id', $project->id)->get();
         
-        return view('projects.show',compact('project','url'));
+        return view('projects.show',compact('project','urls'));
         
        
         
