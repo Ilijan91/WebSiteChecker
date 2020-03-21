@@ -31,7 +31,9 @@ class UrlsController extends Controller
      */
     public function create($id)
     {
+       
         $project= Project::findOrFail($id);
+        
         return view('urls.create')->with('project',$project);
     }
 
@@ -103,6 +105,7 @@ class UrlsController extends Controller
     
         $url->url = $request->input('url');
         $url->check_frequency = $request->input('check_frequency');
+        $url->last_checked = $request->input('last_checked');
         $url->project_id = $request->input('project_id');;
 
         $url->save();

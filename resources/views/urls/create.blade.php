@@ -10,7 +10,7 @@
                 <div class="card-body">
                     {!!Form::open(['action' => ['UrlsController@store', $project->id],'method' => 'POST'])!!}
                     {{Form::bsText('url','',['placeholder' => 'Url of project'])}}
-                    {{Form::bsText('check_frequency','',['placeholder' => 'Frequency'])}}
+                    {{Form::bsSelect('check_frequency')}}
                     {{Form::bsText('last_checked','',['placeholder' => 'Last checked'])}}
                     {{Form::hidden('project_id', $project->id)}}
                     {{Form::bsSubmit('Submit', ['class'=>'btn btn-primary'])}}

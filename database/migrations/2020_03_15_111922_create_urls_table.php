@@ -17,7 +17,7 @@ class CreateUrlsTable extends Migration
             $table->id();
             $table->string('url');
             $table->integer('project_id');
-            $table->string('check_frequency');
+            $table->integer('check_frequency');
             $table->string('last_checked');
             $table->timestamps();
         });
