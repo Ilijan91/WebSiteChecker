@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\CheckStatus;
+use Illuminate\Support\Facades\Http;
 use App\Url;
+use App\CheckStatus;
+
 
 class CheckUrlStatus extends Command
 {
@@ -13,14 +15,14 @@ class CheckUrlStatus extends Command
      *
      * @var string
      */
-    protected $signature = 'command:checkstatus';
+    protected $signature = 'checkstatus';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Runs an HTTP checkstatus to verify the url is available';
 
     /**
      * Create a new command instance.
@@ -30,6 +32,7 @@ class CheckUrlStatus extends Command
     public function __construct()
     {
         parent::__construct();
+        
     }
 
     /**
@@ -39,28 +42,51 @@ class CheckUrlStatus extends Command
      */
     public function handle()
     {
+
+
+
+
+        $urls=Url::select('id','url','check_frequency')->get();
+
+        foreach($urls as $url){
+
+            if (! filter_var($url->url, FILTER_VALIDATE_URL)) {
+                throw new \Exception("Invalid URL '$url->url'");
+            }
+
+            if($url->check_frequency == 1){
+                try {
+
+                    $response = Http::get($url->url);
+                    $expected = $response->successful();;
+                    $status = $response->status();
+                    
+                } catch (\Exception $e) {
+                    $this->error("Response status failed with an exception");
+                     $this->error($e->getMessage());
+                     return 2;
+                    
+                }
         
-     $checkStatus= new CheckStatus();
-    
-
-     // FIND URL
-
-     $urls = Url::select('url')->get();
-    
-     // check all url-s
-        $statusesCode=[];
-     foreach($urls as $url){
-        $statusesCode[]=$checkStatus->checkUrl($url->url);
-     }
-     
-   
-     
-            
-     
-
-
-     
-
-
+                if (1 != $expected) {
+                     $this->error("Response status failed  with a status of '$status' (expected '$expected')");
+                     return 1;
+                    
+                }
+        
+                 $this->info("Response status passed for $url->url");
+               
+                $statusSave= new CheckStatus();
+                $statusSave->url_id = $url->id;
+                $statusSave->status = $status;
+                $statusSave->save();
+            }
+        } 
     }
+
+
+
+  
+
+    
 }
