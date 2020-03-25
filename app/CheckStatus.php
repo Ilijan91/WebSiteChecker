@@ -11,17 +11,6 @@ class CheckStatus extends Model
     public function url(){
         return $this->belongsTo('App\Url');
     }
-
-
-    public static function checkUrl(){
-        
-       
-        
-     }
-
-   
-
-
  
 
 

@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use App\Url;
 use App\CheckStatus;
+use GuzzleHttp\Exception\RequestException;
 
 
 class CheckUrlStatus extends Command
@@ -42,46 +43,28 @@ class CheckUrlStatus extends Command
      */
     public function handle()
     {
+    $urls=Url::select('id','url')->get();
 
-
-
-
-        $urls=Url::select('id','url','check_frequency')->get();
-
-        foreach($urls as $url){
-
-            if (! filter_var($url->url, FILTER_VALIDATE_URL)) {
-                throw new \Exception("Invalid URL '$url->url'");
+    foreach($urls as $url){
+        try {
+            $client = new \GuzzleHttp\Client([
+                'timeout' => 20,
+                'allow_redirects' => false,]);
+            $response = $client->request('GET', $url->url);
+            $status= $response->getStatusCode();
+                
+            } catch (RequestException $ex) {
+                $status=$ex->getCode();
             }
+            $statusSave= new CheckStatus();
+            $statusSave->url_id = $url->id;
+            $statusSave->status = $status;
+            $statusSave->save();
 
-            if($url->check_frequency == 1){
-                try {
-
-                    $response = Http::get($url->url);
-                    $expected = $response->successful();;
-                    $status = $response->status();
-                    
-                } catch (\Exception $e) {
-                    $this->error("Response status failed with an exception");
-                     $this->error($e->getMessage());
-                     return 2;
-                    
-                }
-        
-                if (1 != $expected) {
-                     $this->error("Response status failed  with a status of '$status' (expected '$expected')");
-                     return 1;
-                    
-                }
-        
-                 $this->info("Response status passed for $url->url");
-               
-                $statusSave= new CheckStatus();
-                $statusSave->url_id = $url->id;
-                $statusSave->status = $status;
-                $statusSave->save();
-            }
+            $this->info("status saved for $url->url"); 
+           
         } 
+         
     }
 
 
