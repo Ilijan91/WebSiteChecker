@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Http;
 use App\Url;
 use App\CheckStatus;
 use GuzzleHttp\Exception\RequestException;
+use Response;
+
 
 
 class CheckUrlStatus extends Command
@@ -48,13 +50,17 @@ class CheckUrlStatus extends Command
     foreach($urls as $url){
         try {
             $client = new \GuzzleHttp\Client([
-                'timeout' => 20,
+                'timeout' => 3.14,
                 'allow_redirects' => false,]);
             $response = $client->request('GET', $url->url);
-            $status= $response->getStatusCode();
-                
-            } catch (RequestException $ex) {
-                $status=$ex->getCode();
+            $status=$response->getStatusCode();
+            } catch (RequestException $e) {
+                if ($e->hasResponse()) {
+                    $response = $e->getResponse();
+                    $status=$response->getStatusCode();
+                } else {
+                    $status=503;
+                }
             }
             $statusSave= new CheckStatus();
             $statusSave->url_id = $url->id;
