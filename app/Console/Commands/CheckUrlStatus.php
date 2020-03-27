@@ -8,6 +8,7 @@ use App\Url;
 use App\CheckStatus;
 use GuzzleHttp\Exception\RequestException;
 use Response;
+use Carbon\Carbon;
 
 
 
@@ -43,34 +44,67 @@ class CheckUrlStatus extends Command
      *
      * @return mixed
      */
-    public function handle()
-    {
-    $urls=Url::select('id','url')->get();
+    public function handle(){
+    
+    $urls=Url::select('id','url','check_frequency')->get();
+    $statusTime= CheckStatus::select('id','url_id','updated_at')->get();
 
-    foreach($urls as $url){
-        try {
-            $client = new \GuzzleHttp\Client([
-                'timeout' => 3.14,
-                'allow_redirects' => false,]);
-            $response = $client->request('GET', $url->url);
-            $status=$response->getStatusCode();
-            } catch (RequestException $e) {
-                if ($e->hasResponse()) {
-                    $response = $e->getResponse();
+        foreach($urls as $url){     
+            $checkFrequency=$url->check_frequency;
+            if(count($statusTime) == 0){
+                try {
+                    $client = new \GuzzleHttp\Client([
+                        'timeout' => 3.14,
+                        'allow_redirects' => false,]);
+                    $response = $client->request('GET', $url->url);
                     $status=$response->getStatusCode();
-                } else {
-                    $status=503;
-                }
+                    }catch (RequestException $e) {
+                        if ($e->hasResponse()) {
+                            $response = $e->getResponse();
+                            $status=$response->getStatusCode();
+                        } else {
+                            $status=503;
+                        }
+                    }
+                    $statusSave= new CheckStatus();
+                    $statusSave->url_id = $url->id;
+                    $statusSave->status = $status;
+                    $statusSave->save();
+    
+                    $this->info("status saved for $url->url"); 
+            }else{
+                foreach($statusTime as $time){
+                    if($url->id == $time->url_id){
+                    $statusUpdated=Carbon::parse($time->updated_at);
+                    $currentTime= Carbon::now();
+                    $differenceInTime=$currentTime->diffInMinutes($statusUpdated);
+                        if($differenceInTime == $checkFrequency){
+                            try {
+                                $client = new \GuzzleHttp\Client([
+                                    'timeout' => 3.14,
+                                    'allow_redirects' => false,]);
+                                $response = $client->request('GET', $url->url);
+                                $status=$response->getStatusCode();
+                                }catch (RequestException $e) {
+                                    if ($e->hasResponse()) {
+                                        $response = $e->getResponse();
+                                        $status=$response->getStatusCode();
+                                    } else {
+                                        $status=503;
+                                    }
+                                }
+                                $statusUpdate=CheckStatus::find($time->id);
+                                $statusUpdate->url_id = $url->id;
+                                $statusUpdate->status = $status;
+                                $statusUpdate->updated_at =$currentTime ;
+                                $statusUpdate->save();
+                
+                                $this->info("status updated for $url->url"); 
+                        }
+                    }
+                } 
             }
-            $statusSave= new CheckStatus();
-            $statusSave->url_id = $url->id;
-            $statusSave->status = $status;
-            $statusSave->save();
-
-            $this->info("status saved for $url->url"); 
-           
-        } 
-         
+        }  
     }
 
 

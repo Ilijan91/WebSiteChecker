@@ -99,6 +99,9 @@ class UrlsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request, [
+            'url' => ['required','url','unique:urls']
+          ]);
        
         $url= Url::find($id);
         $this->authorize('update',$url);
