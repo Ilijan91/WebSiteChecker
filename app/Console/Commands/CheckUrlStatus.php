@@ -58,10 +58,12 @@ class CheckUrlStatus extends Command
                         'allow_redirects' => false,]);
                     $response = $client->request('GET', $url->url);
                     $status=$response->getStatusCode();
+                    $visibility=$response->getReasonPhrase();
                     }catch (RequestException $e) {
                         if ($e->hasResponse()) {
                             $response = $e->getResponse();
                             $status=$response->getStatusCode();
+                            $visibility=$response->getReasonPhrase();
                         } else {
                             $status=503;
                         }
@@ -69,6 +71,7 @@ class CheckUrlStatus extends Command
                     $statusSave= new CheckStatus();
                     $statusSave->url_id = $url->id;
                     $statusSave->status = $status;
+                    $statusSave->visibility = $visibility;
                     $statusSave->save();
     
                     $this->info("status saved for $url->url"); 
@@ -85,10 +88,12 @@ class CheckUrlStatus extends Command
                                     'allow_redirects' => false,]);
                                 $response = $client->request('GET', $url->url);
                                 $status=$response->getStatusCode();
+                                $visibility=$response->getReasonPhrase();
                                 }catch (RequestException $e) {
                                     if ($e->hasResponse()) {
                                         $response = $e->getResponse();
                                         $status=$response->getStatusCode();
+                                        $visibility=$response->getReasonPhrase();
                                     } else {
                                         $status=503;
                                     }
@@ -96,6 +101,7 @@ class CheckUrlStatus extends Command
                                 $statusUpdate=CheckStatus::find($time->id);
                                 $statusUpdate->url_id = $url->id;
                                 $statusUpdate->status = $status;
+                                $statusUpdate->visibility = $visibility;
                                 $statusUpdate->updated_at =$currentTime ;
                                 $statusUpdate->save();
                 

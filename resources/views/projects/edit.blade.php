@@ -9,7 +9,6 @@
                 <div class="card-body">
                     {!!Form::open(['action' => ['ProjectsController@update', $project->id],'method' => 'POST'])!!}
                     {{Form::bsText('name',$project->name,['placeholder' => 'Company Name'])}}
-                    {{Form::bsText('visibility',$project->visibility,['placeholder' => 'visibility'])}}
                     {{Form::hidden('_method', 'PUT')}}
                     {{Form::bsSubmit('Submit',['class'=>'btn btn-primary'])}}
                     {!! Form::close() !!}

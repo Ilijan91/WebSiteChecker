@@ -53,7 +53,6 @@ class UrlsController extends Controller
           $url = new Url();
           $url->url = $request->input('url');
           $url->check_frequency = $request->input('check_frequency');
-          $url->last_checked = $request->input('last_checked');
           $url->project_id = $request->input('project_id');
   
           $url->save();
@@ -100,7 +99,7 @@ class UrlsController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'url' => ['required','url','unique:urls']
+            'url' => ['required','url']
           ]);
        
         $url= Url::find($id);
@@ -108,7 +107,6 @@ class UrlsController extends Controller
     
         $url->url = $request->input('url');
         $url->check_frequency = $request->input('check_frequency');
-        $url->last_checked = $request->input('last_checked');
         $url->project_id = $request->input('project_id');;
 
         $url->save();

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Project;
 use App\User;
 use App\Url;
+use App\CheckStatus;
 use DB;
 
 class ProjectsController extends Controller
@@ -45,14 +46,12 @@ class ProjectsController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required',
-            'visibility' => 'required'
+            'name' => 'required'
           ]);
   
           // Create project
           $project = new Project();
           $project->name = $request->input('name');
-          $project->visibility = $request->input('visibility');
           $project->user_id = auth()->user()->id;
   
           $project->save();
@@ -70,12 +69,10 @@ class ProjectsController extends Controller
     {
         
         $project= Project::findOrFail($id);
-        $urls = DB::table('urls')->where('project_id', $project->id)->get();
+        $urls = Url::select()->where('project_id', $project->id)->get();
         
         return view('projects.show',compact('project','urls'));
-        
-       
-        
+         
     }
 
     /**
@@ -107,7 +104,6 @@ class ProjectsController extends Controller
         $this->authorize('update',$project);
         
         $project->name = $request->input('name');
-        $project->visibility = $request->input('visibility');
         $project->user_id = auth()->user()->id;
 
         $project->save();

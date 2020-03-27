@@ -9,7 +9,7 @@ class Url extends Model
     public function project(){
         return $this->belongsTo('App\Project');
     }
-    public function checkstatuses(){
+    public function checkstatus(){
         return $this->hasOne('App\CheckStatus');
     }
 }

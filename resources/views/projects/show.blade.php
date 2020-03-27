@@ -9,10 +9,11 @@
                 <div class="card-body">
                     <ul class="list-group">
                         <li class="list-group-item">Project name: {{$project->name}}</li>
-                        <li class="list-group-item">Visibility: {{$project->visibility}}</li>
+                        
                         <ul class="list-group-item">URL:
                             @foreach ($urls as $url)
                                 <li class="list-group-item"><a href="{{$url->url}}">{{$url->url}}</a></li>
+                                <li class="list-group-item">Visibility: {{$url->checkstatus->visibility}}</li>
                             @endforeach
                         </ul> 
                       </ul>
