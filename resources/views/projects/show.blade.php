@@ -14,7 +14,7 @@
                             @foreach ($urls as $url)
                                 <li class="list-group-item"><a href="{{$url->url}}">{{$url->url}}</a></li>
                                 <li class="list-group-item">Visibility: {{$url->checkstatus->visibility}}</li>
-                                <li class="list-group-item">Last Checked: {{$url->checkstatus->updated_at}}</li>
+                                <li class="list-group-item">Last Checked: {{$url->checkstatus->updated_at->diffForHumans()}}</li>
                             @endforeach
                         </ul> 
                       </ul>

@@ -12,4 +12,7 @@ class Url extends Model
     public function checkstatus(){
         return $this->hasOne('App\CheckStatus');
     }
+    public function user(){
+        return $this->belongsTo('App\User');
+    }
 }

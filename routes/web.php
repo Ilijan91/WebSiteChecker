@@ -22,6 +22,5 @@ Route::get('/urls/{id}/show', 'UrlsController@show');
 Route::get('/urls/{id}/edit', 'UrlsController@edit');
 Route::resource('urls','UrlsController');
 
-
 Route::get('/home', 'HomeController@index');
 

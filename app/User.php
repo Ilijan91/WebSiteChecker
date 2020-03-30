@@ -40,4 +40,11 @@ class User extends Authenticatable
     public function projects(){
         return $this->hasMany('App\Project');
     }
+    public function urls(){
+        return $this->hasMany('App\Url');
+    }
+    public function checkstatuses()
+    {
+        return $this->hasMany('App\CheckStatus');
+    }
 }

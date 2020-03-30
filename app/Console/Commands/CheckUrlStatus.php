@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use App\Url;
+use App\User;
 use App\CheckStatus;
 use GuzzleHttp\Exception\RequestException;
 use Response;
@@ -73,8 +74,16 @@ class CheckUrlStatus extends Command
                     $statusSave->status = $status;
                     $statusSave->visibility = $visibility;
                     $statusSave->save();
-    
-                    $this->info("status saved for $url->url"); 
+
+                   
+                    if($status != 200){
+                        $url=Url::find($url->id);
+                        $user = $url->project->user;
+                        $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility));
+                    }
+                    
+                  
+                    $this->info("status saved for $url->url a status je $status"); 
             }else{
                 foreach($statusTime as $time){
                     if($url->id == $time->url_id){
@@ -104,7 +113,13 @@ class CheckUrlStatus extends Command
                                 $statusUpdate->visibility = $visibility;
                                 $statusUpdate->updated_at =$currentTime ;
                                 $statusUpdate->save();
-                
+                               
+                                if($status != 200){
+                                    $url=Url::find($url->id);
+                                    $user = $url->project->user;
+                                    $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility));
+                                }
+                                
                                 $this->info("status updated for $url->url"); 
                         }
                     }
