@@ -40,6 +40,23 @@
                         </div>
 
                         <div class="form-group row">
+                            {{ Form::label('notification_preference', null, ['class' => 'col-md-4 col-form-label text-md-right']) }}
+                            
+                            <div class="col-md-6">
+                               
+                                {{Form::bsCheckbox('notification_preference[]','mail',true )}}
+                                {{Form::bsCheckbox('notification_preference[]','database')}}
+                                {{Form::bsCheckbox('notification_preference[]','slack')}}
+                                
+                                @error('notification_preference')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
                             <div class="col-md-6">

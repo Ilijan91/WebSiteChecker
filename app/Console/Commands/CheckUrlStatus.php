@@ -83,7 +83,7 @@ class CheckUrlStatus extends Command
                     }
                     
                   
-                    $this->info("status saved for $url->url a status je $status"); 
+                    $this->info("status saved for $url->url"); 
             }else{
                 foreach($statusTime as $time){
                     if($url->id == $time->url_id){

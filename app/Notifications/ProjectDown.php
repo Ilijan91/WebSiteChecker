@@ -35,7 +35,7 @@ class ProjectDown extends Notification
     public function via($notifiable)
     {
         
-        return $notifiable->notification_preference;
+        return explode(',', $notifiable->notification_preference);
     }
 
     /**
@@ -60,8 +60,9 @@ class ProjectDown extends Notification
     {
        
         return [
-            'user_id'=> $this->user->id,
             'username'=> $this->user->name,
+            'url'=>$this->url,
+            'status'=> $this->visibility,
         ];
     }
 
