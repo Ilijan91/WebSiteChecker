@@ -82,7 +82,6 @@ class CheckUrlStatus extends Command
                         $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility));
                     }
                     
-                  
                     $this->info("status saved for $url->url"); 
             }else{
                 foreach($statusTime as $time){

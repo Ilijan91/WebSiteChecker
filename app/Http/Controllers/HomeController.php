@@ -29,4 +29,30 @@ class HomeController extends Controller
         
         return view('projects.index')->with('projects',$user->projects);
     }
+    public function editSettings()
+    {
+        $user_id= auth()->user()->id;
+        $user=User::findOrFail($user_id);
+
+        return view('users.settings')->with('user',$user);
+    }
+    
+
+
+    public function update(Request $request, $id)
+    {
+        
+        
+        $user_id= auth()->user()->id;
+        $user= User::findOrFail($user_id);
+        
+       
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->notification_preference = implode(",", $request->input('notification_preference'));
+       
+        $user->save();
+
+        return redirect('/home')->with('success', 'Settings Changed');
+    }
 }

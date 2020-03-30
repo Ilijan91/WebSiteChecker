@@ -23,4 +23,6 @@ Route::get('/urls/{id}/edit', 'UrlsController@edit');
 Route::resource('urls','UrlsController');
 
 Route::get('/home', 'HomeController@index');
+Route::get('/settings', 'HomeController@editSettings');
+Route::put('/users/{id}','HomeController@update');
 
