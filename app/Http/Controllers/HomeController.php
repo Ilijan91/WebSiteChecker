@@ -27,9 +27,8 @@ class HomeController extends Controller
         $user_id= auth()->user()->id;
         $user=User::findOrFail($user_id);
         $projects=$user->projects;
-        $notifications=auth()->user()->notifications;
 
-        return view('projects.index',compact('projects','notifications'));
+        return view('projects.index',compact('projects'));
     }
     public function editSettings()
     {

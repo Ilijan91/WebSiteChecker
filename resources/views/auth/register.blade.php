@@ -44,10 +44,10 @@
                             
                             <div class="col-md-6">
                                
-                                {{Form::bsCheckbox('notification_preference[]','mail',true )}}
-                                {{Form::bsCheckbox('notification_preference[]','database')}}
-                                {{Form::bsCheckbox('notification_preference[]','slack')}}
-                                
+                                {{Form::bsCheckbox('notification_preference[]','mail' )}}
+                                {{Form::bsCheckbox('notification_preference[]','database' )}}
+                                {{Form::bsCheckbox('notification_preference[]','slack' )}}
+                                {{Form::bsCheckbox('notification_preference[]','Do not notify' )}}
                                 @error('notification_preference')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

@@ -27,7 +27,6 @@ class ProjectDown extends Notification
         $this->url=$url;
         $this->visibility=$visibility;
         $this->project=$project;
-       
     }
 
     /**
@@ -38,7 +37,6 @@ class ProjectDown extends Notification
      */
     public function via($notifiable)
     {
-        
         return explode(',', $notifiable->notification_preference);
     }
 
@@ -50,7 +48,6 @@ class ProjectDown extends Notification
      */
     public function toMail($notifiable)
     {
-       
         return (new MailMessage)
                     ->line($this->user->name)
                     ->line($this->url)
@@ -62,7 +59,6 @@ class ProjectDown extends Notification
 
     public function toDatabase($notifiable)
     {
-       
         return [
             'project'=>$this->project,
             'url'=>$this->url,
@@ -78,7 +74,7 @@ class ProjectDown extends Notification
         $visibility=$this->visibility;
 
         return (new SlackMessage)
-                    ->success()
+                    ->error()
                     ->content('One of your project went down!')
                     ->attachment(function ($attachment) use ($project,$url,$user,$visibility) {
                         $attachment->title($project, $url)

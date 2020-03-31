@@ -74,9 +74,9 @@ class CheckUrlStatus extends Command
                     $statusSave->visibility = $visibility;
                     $statusSave->save();
 
-                   
-                    if($status != 200){
-                        $url=Url::find($url->id);
+                    $url=Url::find($url->id);
+            
+                    if($status != 200 && $url->project->user->notification_preference != 'Do not notify'){
                         $user = $url->project->user;
                         $project=$url->project->name;
                         $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility,$project));
@@ -112,9 +112,10 @@ class CheckUrlStatus extends Command
                                 $statusUpdate->visibility = $visibility;
                                 $statusUpdate->updated_at =$currentTime ;
                                 $statusUpdate->save();
-                               
-                                if($status != 200){
-                                    $url=Url::find($url->id);
+
+                            
+                                $url=Url::find($url->id);
+                                if($status != 200 && $url->project->user->notification_preference != 'Do not notify'){
                                     $user = $url->project->user;
                                     $project=$url->project->name;
                                     $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility,$project));

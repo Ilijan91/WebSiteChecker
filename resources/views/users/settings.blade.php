@@ -17,6 +17,7 @@
                     {{Form::bsCheckbox('notification_preference[]','mail')}}
                     {{Form::bsCheckbox('notification_preference[]','database')}}
                     {{Form::bsCheckbox('notification_preference[]','slack')}}
+                    {{Form::bsCheckbox('notification_preference[]','Do not notify')}}
                     {{Form::hidden('_method', 'PUT')}}
                     {{Form::bsSubmit('Change',['class'=>'btn btn-primary'])}}
                     

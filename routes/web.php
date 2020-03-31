@@ -26,3 +26,7 @@ Route::get('/home', 'HomeController@index');
 Route::get('/settings', 'HomeController@editSettings');
 Route::put('/users/{id}','HomeController@update');
 
+Route::get('markAsRead', function(){
+    auth()->user()->unreadNotifications->markAsRead();
+    return redirect()->back();
+})->name('markRead');
