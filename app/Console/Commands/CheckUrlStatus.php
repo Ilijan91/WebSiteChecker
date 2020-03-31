@@ -116,7 +116,8 @@ class CheckUrlStatus extends Command
                                 if($status != 200){
                                     $url=Url::find($url->id);
                                     $user = $url->project->user;
-                                    $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility));
+                                    $project=$url->project->name;
+                                    $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility,$project));
                                 }
                                 
                                 $this->info("status updated for $url->url"); 

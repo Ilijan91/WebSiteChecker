@@ -48,7 +48,7 @@
               @if(count($notifications)>0)
                 @foreach ($notifications as $notification)
                   <h5>Project: {{$notification->data['project']}}</h5>
-                  <p><a href="{{$notification->data['url']}}">{{$notification->data['url']}}</a> stopped working <strong>{{$notification->updated_at->diffForHumans()}}</strong> with status {{$notification->data['status']}}</p>
+                  <p><a href="{{$notification->data['url']}}">{{$notification->data['url']}}</a> stopped working <strong>{{$notification->updated_at->diffForHumans()}}</strong> with reason {{$notification->data['status']}}</p>
                   <hr>
                 @endforeach
               @else

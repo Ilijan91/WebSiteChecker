@@ -6,6 +6,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\SlackMessage;
+
 
 class ProjectDown extends Notification
 {
@@ -70,11 +72,26 @@ class ProjectDown extends Notification
 
     public function toSlack($notifiable)
     {
-       
-        return [
-            
-        ];
+        $project=$this->project;
+        $user=$this->user;
+        $url = $this->url;
+        $visibility=$this->visibility;
+
+        return (new SlackMessage)
+                    ->success()
+                    ->content('One of your project went down!')
+                    ->attachment(function ($attachment) use ($project,$url,$user,$visibility) {
+                        $attachment->title($project, $url)
+                                    ->fields([
+                                            'User' => $user->name,
+                                            'Url' => $url,
+                                            'Reason' => $visibility ,
+                                            'Status' => ':-1:',
+                                        ]);
+                    });
     }
 
     
 }
+
+
