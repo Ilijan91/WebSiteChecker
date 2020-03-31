@@ -12,9 +12,7 @@ class Project extends Model
     public function url(){
         return $this->hasOne('App\Url');
     }
-    public function checkstatus(){
-        return $this->hasOne('App\CheckStatus');
-    }
+    
     
  
 }

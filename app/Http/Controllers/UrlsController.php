@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Project;
 use App\Url;
-use DB;
+
 
 
 class UrlsController extends Controller
 {
-
     public function __construct(){
         $this->middleware('auth');
     }
@@ -31,7 +30,6 @@ class UrlsController extends Controller
      */
     public function create($id)
     {
-       
         $project= Project::findOrFail($id);
         
         return view('urls.create')->with('project',$project);
@@ -48,17 +46,14 @@ class UrlsController extends Controller
         $this->validate($request, [
             'url' => ['required','url','unique:urls']
           ]);
-        
           // Create url
           $url = new Url();
           $url->url = $request->input('url');
           $url->check_frequency = $request->input('check_frequency');
           $url->project_id = $request->input('project_id');
-  
           $url->save();
   
           return redirect('/home')->with('success', 'Url Added');
-        
     }
 
     /**
@@ -70,8 +65,10 @@ class UrlsController extends Controller
     public function show($id)
     {
         $project= Project::find($id);
+
         $this->authorize('update',$project);
-        $urls = DB::table('urls')->where('project_id', $project->id)->get();
+        $urls = Url::select()->where('project_id', $project->id)->get();
+
         return view('urls.show',compact('urls','project'));
     }
 
@@ -83,9 +80,10 @@ class UrlsController extends Controller
      */
     public function edit($id)
     {
-        
         $url= Url::find($id);
+
         $this->authorize('update',$url);
+
         return view('urls.edit', compact('url'));
     }
 
@@ -101,14 +99,12 @@ class UrlsController extends Controller
         $this->validate($request, [
             'url' => ['required','url']
           ]);
-       
         $url= Url::find($id);
         $this->authorize('update',$url);
     
         $url->url = $request->input('url');
         $url->check_frequency = $request->input('check_frequency');
         $url->project_id = $request->input('project_id');;
-
         $url->save();
 
         return redirect('/home')->with('success', 'Url Changed');
@@ -127,6 +123,5 @@ class UrlsController extends Controller
         $url->delete();
         
         return redirect('/home')->with('success', 'Url Deleted');
-        
     }
 }

@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Project;
-use App\User;
 use App\Url;
-use App\CheckStatus;
-use DB;
+
+
 
 class ProjectsController extends Controller
 {
@@ -23,7 +22,6 @@ class ProjectsController extends Controller
     {
         $projects=Project::orderBy('created_at','desc')->get();
         
-
         return view('home',compact('projects'));
     }
 
@@ -48,12 +46,10 @@ class ProjectsController extends Controller
         $this->validate($request, [
             'name' => 'required'
           ]);
-  
           // Create project
           $project = new Project();
           $project->name = $request->input('name');
           $project->user_id = auth()->user()->id;
-  
           $project->save();
   
           return redirect('/home')->with('success', 'Project Added');
@@ -66,8 +62,7 @@ class ProjectsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        
+    { 
         $project= Project::findOrFail($id);
         $urls = Url::select()->where('project_id', $project->id)->get();
         
@@ -98,14 +93,11 @@ class ProjectsController extends Controller
      */
     public function update(Request $request, $id)
     {
-       
-
         $project= Project::find($id);
         $this->authorize('update',$project);
         
         $project->name = $request->input('name');
         $project->user_id = auth()->user()->id;
-
         $project->save();
 
         return redirect('/home')->with('success', 'Project Updated');
@@ -120,8 +112,8 @@ class ProjectsController extends Controller
     public function destroy($id)
     {
         $project=Project::find($id);
-    
         $project->delete();
+        
         return redirect('/home')->with('success', 'Project Deleted');
     }
 }

@@ -11,18 +11,20 @@ class ProjectDown extends Notification
 {
     use Queueable;
     public $user;
-   public $url;
-   public $visibility;
+    public $url;
+    public $visibility;
+    public $project;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user,$url,$visibility)
+    public function __construct($user,$url,$visibility,$project)
     {
         $this->user=$user;
         $this->url=$url;
         $this->visibility=$visibility;
+        $this->project=$project;
        
     }
 
@@ -60,22 +62,19 @@ class ProjectDown extends Notification
     {
        
         return [
-            'username'=> $this->user->name,
+            'project'=>$this->project,
             'url'=>$this->url,
             'status'=> $this->visibility,
         ];
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
+    public function toSlack($notifiable)
     {
+       
         return [
-            //
+            
         ];
     }
+
+    
 }
