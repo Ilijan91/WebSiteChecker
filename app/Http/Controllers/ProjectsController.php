@@ -67,7 +67,7 @@ class ProjectsController extends Controller
         $project= Project::findOrFail($id);
         $urls = Url::select()->where('project_id', $project->id)->get();
         
-        if($project->visibility == 'false' && auth()->user() != true){
+        if($project->visibility != 'true' && auth()->id() != $project->user_id ){
             return 'This project is not visible'; // dodati neku stranicu da projekat nije vidljiv view(projects.error);
         }else{
             return view('projects.show',compact('project','urls'));
