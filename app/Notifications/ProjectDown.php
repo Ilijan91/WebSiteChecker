@@ -14,18 +14,18 @@ class ProjectDown extends Notification
     use Queueable;
     public $user;
     public $url;
-    public $visibility;
+    public $reason;
     public $project;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user,$url,$visibility,$project)
+    public function __construct($user,$url,$reason,$project)
     {
         $this->user=$user;
         $this->url=$url;
-        $this->visibility=$visibility;
+        $this->reason=$reason;
         $this->project=$project;
     }
 
@@ -51,7 +51,7 @@ class ProjectDown extends Notification
         return (new MailMessage)
                     ->line($this->user->name)
                     ->line($this->url)
-                    ->line($this->visibility)
+                    ->line($this->reason)
                     ->action('Check your url', $this->url)
                     ->line('Thank you for using our WebSiteChecker!');
     }
@@ -62,7 +62,7 @@ class ProjectDown extends Notification
         return [
             'project'=>$this->project,
             'url'=>$this->url,
-            'status'=> $this->visibility,
+            'status'=> $this->reason,
         ];
     }
 
@@ -71,17 +71,17 @@ class ProjectDown extends Notification
         $project=$this->project;
         $user=$this->user;
         $url = $this->url;
-        $visibility=$this->visibility;
+        $reason=$this->reason;
 
         return (new SlackMessage)
                     ->error()
                     ->content('One of your project went down!')
-                    ->attachment(function ($attachment) use ($project,$url,$user,$visibility) {
+                    ->attachment(function ($attachment) use ($project,$url,$user,$reason) {
                         $attachment->title($project, $url)
                                     ->fields([
                                             'User' => $user->name,
                                             'Url' => $url,
-                                            'Reason' => $visibility ,
+                                            'Reason' => $reason ,
                                             'Status' => ':-1:',
                                         ]);
                     });

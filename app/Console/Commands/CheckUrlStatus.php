@@ -58,12 +58,12 @@ class CheckUrlStatus extends Command
                         'allow_redirects' => false,]);
                     $response = $client->request('GET', $url->url);
                     $status=$response->getStatusCode();
-                    $visibility=$response->getReasonPhrase();
+                    $reason=$response->getReasonPhrase();
                     }catch (RequestException $e) {
                         if ($e->hasResponse()) {
                             $response = $e->getResponse();
                             $status=$response->getStatusCode();
-                            $visibility=$response->getReasonPhrase();
+                            $reason=$response->getReasonPhrase();
                         } else {
                             $status=503;
                         }
@@ -71,7 +71,7 @@ class CheckUrlStatus extends Command
                     $statusSave= new CheckStatus();
                     $statusSave->url_id = $url->id;
                     $statusSave->status = $status;
-                    $statusSave->visibility = $visibility;
+                    $statusSave->reason = $reason;
                     $statusSave->save();
 
                     $url=Url::find($url->id);
@@ -79,7 +79,7 @@ class CheckUrlStatus extends Command
                     if($status != 200 && $url->project->user->notification_preference != 'Do not notify'){
                         $user = $url->project->user;
                         $project=$url->project->name;
-                        $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility,$project));
+                        $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$reason,$project));
                     }
                     
                     $this->info("status saved for $url->url"); 
@@ -96,20 +96,20 @@ class CheckUrlStatus extends Command
                                     'allow_redirects' => false,]);
                                 $response = $client->request('GET', $url->url);
                                 $status=$response->getStatusCode();
-                                $visibility=$response->getReasonPhrase();
+                                $reason=$response->getReasonPhrase();
                                 }catch (RequestException $e) {
                                     if ($e->hasResponse()) {
                                         $response = $e->getResponse();
                                         $status=$response->getStatusCode();
-                                        $visibility=$response->getReasonPhrase();
+                                        $reason=$response->getReasonPhrase();
                                     } else {
                                         $status=503;
                                     }
                                 }
-                                $statusUpdate=CheckStatus::find($time->id);
+                                $statusUpdate= new CheckStatus();
                                 $statusUpdate->url_id = $url->id;
                                 $statusUpdate->status = $status;
-                                $statusUpdate->visibility = $visibility;
+                                $statusUpdate->reason = $reason;
                                 $statusUpdate->updated_at =$currentTime ;
                                 $statusUpdate->save();
 
@@ -118,7 +118,7 @@ class CheckUrlStatus extends Command
                                 if($status != 200 && $url->project->user->notification_preference != 'Do not notify'){
                                     $user = $url->project->user;
                                     $project=$url->project->name;
-                                    $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$visibility,$project));
+                                    $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$reason,$project));
                                 }
                                 
                                 $this->info("status updated for $url->url"); 

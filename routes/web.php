@@ -17,6 +17,9 @@ Route::get('/', 'ProjectsController@index');
 Auth::routes();
 
 Route::resource('projects','ProjectsController');
+
+
+
 Route::get('/urls/{id}/create', 'UrlsController@create');
 Route::get('/urls/{id}/show', 'UrlsController@show');
 Route::get('/urls/{id}/edit', 'UrlsController@edit');

@@ -49,6 +49,7 @@ class ProjectsController extends Controller
           // Create project
           $project = new Project();
           $project->name = $request->input('name');
+          $project->visibility = $request->input('visibility');
           $project->user_id = auth()->user()->id;
           $project->save();
   
@@ -66,8 +67,11 @@ class ProjectsController extends Controller
         $project= Project::findOrFail($id);
         $urls = Url::select()->where('project_id', $project->id)->get();
         
-        return view('projects.show',compact('project','urls'));
-         
+        if($project->visibility == 'false' && auth()->user() != true){
+            return 'This project is not visible'; // dodati neku stranicu da projekat nije vidljiv view(projects.error);
+        }else{
+            return view('projects.show',compact('project','urls'));
+        }  
     }
 
     /**
@@ -97,6 +101,7 @@ class ProjectsController extends Controller
         $this->authorize('update',$project);
         
         $project->name = $request->input('name');
+        $project->visibility = $request->input('visibility');
         $project->user_id = auth()->user()->id;
         $project->save();
 

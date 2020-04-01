@@ -9,8 +9,8 @@ class Project extends Model
     public function user(){
         return $this->belongsTo('App\User');
     }
-    public function url(){
-        return $this->hasOne('App\Url');
+    public function urls(){
+        return $this->hasMany('App\Url');
     }
     
     

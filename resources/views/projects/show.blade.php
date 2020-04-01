@@ -12,9 +12,13 @@
                         
                         <ul class="list-group-item">URL:
                             @foreach ($urls as $url)
-                                <li class="list-group-item"><a href="{{$url->url}}">{{$url->url}}</a></li>
-                                <li class="list-group-item">Visibility: {{$url->checkstatus->visibility}}</li>
-                                <li class="list-group-item">Last Checked: {{$url->checkstatus->updated_at->diffForHumans()}}</li>
+                                <li class="list-group-item"><strong>{{$url->id}}:</strong><a href="{{$url->url}}">{{$url->url}}</a></li>
+                                    @foreach ($url->checkstatuses as $status)
+                                    <hr>
+                                        <li class="list-group-item">Visibility: {{$status->reason}}</li>
+                                        <li class="list-group-item">Last Checked: {{$status->updated_at->diffForHumans()}}</li>
+                                    @endforeach
+                                <hr>
                             @endforeach
                         </ul> 
                       </ul>

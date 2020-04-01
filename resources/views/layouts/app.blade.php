@@ -63,7 +63,7 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item text-white bg-primary" href="markAsRead">
+                                    <a class="dropdown-item text-white bg-primary" href="/markAsRead">
                                         Mark all as Read
                                      </a>
                                     @foreach(auth()->user()->unreadNotifications as $notification)

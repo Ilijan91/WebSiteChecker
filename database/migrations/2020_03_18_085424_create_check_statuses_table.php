@@ -17,7 +17,7 @@ class CreateCheckStatusesTable extends Migration
             $table->id();
             $table->integer('url_id');
             $table->string('status');
-            $table->string('visibility');
+            $table->string('reason');
             $table->timestamps();
         });
     }

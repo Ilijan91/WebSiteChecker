@@ -11,6 +11,10 @@
                 <div class="card-body">
                     {!!Form::open(['action' => 'ProjectsController@store','method' => 'POST'])!!}
                     {{Form::bsText('name','',['placeholder' => 'Project Name'])}}
+                    {{ Form::label( 'Visible in public:') }}
+                    <br>
+                    {{ Form::radio('visibility','true') }} Yes
+                    {{ Form::radio('visibility','false') }} No
                     {{Form::bsSubmit('Submit', ['class'=>'btn btn-primary'])}}
                     {!! Form::close() !!}
                 </div>
