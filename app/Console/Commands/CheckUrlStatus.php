@@ -47,9 +47,11 @@ class CheckUrlStatus extends Command
     public function handle(){
     
     $urls=Url::select('id','url','check_frequency')->get();
-    $statusTime= CheckStatus::select('id','url_id','updated_at')->get();
+    
 
         foreach($urls as $url){     
+           
+            $statusTime= CheckStatus::select('id','url_id','updated_at')->where('url_id',$url->id)->get();
             $checkFrequency=$url->check_frequency;
             if(count($statusTime) == 0){
                 try {
@@ -81,15 +83,17 @@ class CheckUrlStatus extends Command
                         $project=$url->project->name;
                         $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$reason,$project));
                     }
-                    
-                    $this->info("status saved for $url->url"); 
             }else{
-                foreach($statusTime as $time){
-                    if($url->id == $time->url_id){
-                    $statusUpdated=Carbon::parse($time->updated_at);
+                $statusTime= CheckStatus::latest('id','url_id','updated_at')->where('url_id',$url->id)->first();
+                
+                    $statusUpdated=Carbon::parse($statusTime->updated_at);
                     $currentTime= Carbon::now();
                     $differenceInTime=$currentTime->diffInMinutes($statusUpdated);
-                        if($differenceInTime == $checkFrequency){
+                   
+                    if($url->id == $statusTime->url_id && $differenceInTime == $checkFrequency){
+                   
+                       
+                        
                             try {
                                 $client = new \GuzzleHttp\Client([
                                     'timeout' => 3.14,
@@ -110,7 +114,6 @@ class CheckUrlStatus extends Command
                                 $statusUpdate->url_id = $url->id;
                                 $statusUpdate->status = $status;
                                 $statusUpdate->reason = $reason;
-                                $statusUpdate->updated_at =$currentTime ;
                                 $statusUpdate->save();
 
                             
@@ -120,11 +123,9 @@ class CheckUrlStatus extends Command
                                     $project=$url->project->name;
                                     $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$reason,$project));
                                 }
-                                
-                                $this->info("status updated for $url->url"); 
-                        }
+                        
                     }
-                } 
+                
             }
         }  
     }

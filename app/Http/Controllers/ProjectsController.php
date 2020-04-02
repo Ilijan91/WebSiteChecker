@@ -118,6 +118,7 @@ class ProjectsController extends Controller
     {
         $project=Project::find($id);
         $project->delete();
+        $deleteUrlofProject= Url::where('project_id',$id)->delete();
         
         return redirect('/home')->with('success', 'Project Deleted');
     }
