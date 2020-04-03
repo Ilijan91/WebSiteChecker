@@ -13,6 +13,9 @@ class Project extends Model
         return $this->hasMany('App\Url');
     }
     
+    public function path(){
+        return url("/projects/{$this->hash}");
+    }
     
  
 }

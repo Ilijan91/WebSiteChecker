@@ -18,12 +18,11 @@ Auth::routes();
 
 Route::resource('projects','ProjectsController');
 
-
-
-Route::get('/urls/{id}/create', 'UrlsController@create');
-Route::get('/urls/{id}/show', 'UrlsController@show');
-Route::get('/urls/{id}/edit', 'UrlsController@edit');
 Route::resource('urls','UrlsController');
+Route::get('/urls/{project}/create', 'UrlsController@create');
+Route::get('/urls/{project}/show', 'UrlsController@show');
+Route::get('/urls/{project}/edit', 'UrlsController@edit');
+
 
 Route::get('/home', 'HomeController@index');
 Route::get('/settings', 'HomeController@editSettings');

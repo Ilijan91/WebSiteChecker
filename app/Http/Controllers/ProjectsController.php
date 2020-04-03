@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Project;
 use App\Url;
+use Illuminate\Support\Facades\Hash;
 
 
 
@@ -50,6 +51,7 @@ class ProjectsController extends Controller
           $project = new Project();
           $project->name = $request->input('name');
           $project->visibility = $request->input('visibility');
+          $project->hash=base64_encode(Hash::make($project->hash));
           $project->user_id = auth()->user()->id;
           $project->save();
   
@@ -62,12 +64,12 @@ class ProjectsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($hash)
     { 
-        $project= Project::findOrFail($id);
-        $urls = Url::select()->where('project_id', $project->id)->get();
+        $project= Project::select()->where('hash',$hash)->get();
+        $urls = Url::select()->where('project_id', $project[0]->id)->get();
         
-        if($project->visibility != 'true' && auth()->id() != $project->user_id ){
+        if($project[0]->visibility != 'true' && auth()->id() != $project[0]->user_id ){
             return 'This project is not visible'; // dodati neku stranicu da projekat nije vidljiv view(projects.error);
         }else{
             return view('projects.show',compact('project','urls'));

@@ -8,7 +8,7 @@
 
                 <div class="card-body">
                     <ul class="list-group">
-                        <li class="list-group-item">Project name: {{$project->name}}</li>
+                        <li class="list-group-item">Project name: {{$project[0]->name}}</li>
                         
                         <ul class="list-group-item">URL:
                             @foreach ($urls as $url)
