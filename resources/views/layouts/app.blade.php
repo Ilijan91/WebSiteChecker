@@ -84,6 +84,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="/settings">Settings</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/invite">Invite User</a>
+                            </li>
                             
 
                             <li class="nav-item dropdown">

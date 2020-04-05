@@ -32,3 +32,9 @@ Route::get('markAsRead', function(){
     auth()->user()->unreadNotifications->markAsRead();
     return redirect()->back();
 })->name('markRead');
+
+Route::get('invite', 'InviteController@invite')->name('invite');
+Route::post('invite', 'InviteController@process')->name('process');
+
+Route::get('accept/{token}', 'InviteController@accept')->name('accept');
+Route::get('decline/{token}', 'InviteController@decline')->name('decline');
