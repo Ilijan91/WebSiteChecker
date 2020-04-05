@@ -6,9 +6,10 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use App\Url;
 use App\CheckStatus;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Response;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -47,90 +48,55 @@ class CheckUrlStatus extends Command
     public function handle(){
     
     $urls=Url::select('id','url','check_frequency')->get();
-    
 
-        foreach($urls as $url){     
+        foreach($urls as $url){       
+            $statusTime= CheckStatus::latest()->where('url_id',$url->id)->first();
            
-            $statusTime= CheckStatus::select('id','url_id','updated_at')->where('url_id',$url->id)->get();
-            $checkFrequency=$url->check_frequency;
-            if(count($statusTime) == 0){
-                try {
-                    $client = new \GuzzleHttp\Client([
-                        'timeout' => 3.14,
-                        'allow_redirects' => false,]);
-                    $response = $client->request('GET', $url->url);
-                    $status=$response->getStatusCode();
-                    $reason=$response->getReasonPhrase();
-                    }catch (RequestException $e) {
-                        if ($e->hasResponse()) {
-                            $response = $e->getResponse();
-                            $status=$response->getStatusCode();
-                            $reason=$response->getReasonPhrase();
-                        } else {
-                            $status=503;
-                        }
-                    }
-                    $statusSave= new CheckStatus();
-                    $statusSave->url_id = $url->id;
-                    $statusSave->status = $status;
-                    $statusSave->reason = $reason;
-                    $statusSave->save();
-
-                    $url=Url::find($url->id);
-            
-                    if($status != 200 && $url->project->user->notification_preference != 'Do not notify'){
-                        $user = $url->project->user;
-                        $project=$url->project->name;
-                        $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$reason,$project));
-                    }
+            if($statusTime == null){
+               $this->saveStats($url);
             }else{
-                $statusTime= CheckStatus::latest('id','url_id','updated_at')->where('url_id',$url->id)->first();
-                
-                    $statusUpdated=Carbon::parse($statusTime->updated_at);
-                    $currentTime= Carbon::now();
-                    $differenceInTime=$currentTime->diffInMinutes($statusUpdated);
-                   
-                    if($url->id == $statusTime->url_id && $differenceInTime == $checkFrequency){
-                   
-                       
-                        
-                            try {
-                                $client = new \GuzzleHttp\Client([
-                                    'timeout' => 3.14,
-                                    'allow_redirects' => false,]);
-                                $response = $client->request('GET', $url->url);
-                                $status=$response->getStatusCode();
-                                $reason=$response->getReasonPhrase();
-                                }catch (RequestException $e) {
-                                    if ($e->hasResponse()) {
-                                        $response = $e->getResponse();
-                                        $status=$response->getStatusCode();
-                                        $reason=$response->getReasonPhrase();
-                                    } else {
-                                        $status=503;
-                                    }
-                                }
-                                $statusUpdate= new CheckStatus();
-                                $statusUpdate->url_id = $url->id;
-                                $statusUpdate->status = $status;
-                                $statusUpdate->reason = $reason;
-                                $statusUpdate->save();
-
-                            
-                                $url=Url::find($url->id);
-                                if($status != 200 && $url->project->user->notification_preference != 'Do not notify'){
-                                    $user = $url->project->user;
-                                    $project=$url->project->name;
-                                    $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$reason,$project));
-                                }
-                        
-                    }
-                
-            }
+                $checkFrequency=$url->check_frequency;
+                $currentTime= Carbon::parse(Carbon::now()->addSeconds(30));
+                $updateTime=Carbon::parse($statusTime->updated_at);
+                $differenceInMinutes=$currentTime->diffInMinutes($updateTime);
+                //Log::debug($currentTime . ' and updated time is   ' . $updateTime . '    diference in minutes ' .$differenceInMinutes );
+                if($differenceInMinutes == $checkFrequency){
+                    $this->saveStats($url);
+                } 
+            }  
         }  
     }
 
+    private function saveStats($url){
+        try{
+            $client = new \GuzzleHttp\Client();
+            $request = $client->get($url->url);
+            $statusCode = $request->getStatusCode();
+            $statusReason= $request->getReasonPhrase();
+        }catch(RequestException $e){
+            if($e->getResponse()){
+                $statusCode = $e->getResponse()->getStatusCode();
+                $statusReason = $e->getResponse()->getReasonPhrase();
+            }else{
+                $statusCode=$e->gethandlerContext()['http_code'];
+                $statusReason=$e->gethandlerContext()['error'];
+            }
+        }
+        $statusSave= new CheckStatus();
+        $statusSave->url_id = $url->id;
+        $statusSave->status = $statusCode;
+        $statusSave->reason = $statusReason;
+        $statusSave->save();
 
+        $url=Url::find($url->id);
+        if($statusCode != 200 && $url->project->user->notification_preference != 'Do not notify'){
+            $user = $url->project->user;
+            $project=$url->project->name;
+            $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$statusReason,$project));
+        } 
+    }
+
+    
 
   
 
