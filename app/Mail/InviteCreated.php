@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Invite;
 use App\Team;
+use App\User;
 
 class InviteCreated extends Mailable
 {
@@ -32,8 +33,8 @@ class InviteCreated extends Mailable
     {
         
         $invite=$this->invite;
-        $team=Team::find($this->invite->team_id);
-        $user=auth()->user();
+        $team=Team::findOrFail($this->invite->team_id);
+        $user=User::findOrFail($this->invite->user_id);
         return $this->from($user->email)
                     ->view('emails.invite',compact('user','invite','team'));
         
