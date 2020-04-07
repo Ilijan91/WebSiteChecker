@@ -19,9 +19,10 @@ class InviteCreated extends Mailable
      *
      * @return void
      */
-    public function __construct(Invite $invite)
+    public function __construct($invite,$declinedByUser=null)
     {
         $this->invite = $invite;
+        $this->declinedByUser=$declinedByUser;
     }
 
     /**
@@ -31,12 +32,17 @@ class InviteCreated extends Mailable
      */
     public function build()
     {
-        
-        $invite=$this->invite;
-        $team=Team::findOrFail($this->invite->team_id);
-        $user=User::findOrFail($this->invite->user_id);
-        return $this->from($user->email)
-                    ->view('emails.invite',compact('user','invite','team'));
-        
+        $invite=$this->invite;    
+        $team=Team::findOrFail($invite->team_id);
+        if($invite->user_id != null){
+            $user=User::findOrFail($invite->user_id);
+            return $this->from($user->email)
+                        ->view('emails.invite',compact('user','invite','team'));
+        }else{
+            $user=User::select()->where('email', $this->declinedByUser->email)->get();
+            return $this->from($user[0]->email)
+                        ->view('emails.deny',compact('user','team'));
+        }
+
     }
 }

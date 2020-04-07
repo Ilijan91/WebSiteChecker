@@ -47,3 +47,8 @@ Route::get('/teams/edit/{id}', 'TeamsController@edit')->name('teams.edit');
 Route::put('/teams/edit/{id}', 'TeamsController@update')->name('teams.update');
 Route::delete('/teams/destroy/{id}', 'TeamsController@destroy')->name('teams.destroy');
 Route::get('/teams/switch/{id}', 'TeamsController@switchTeam')->name('teams.switch');
+
+Route::get('/members/{id}', 'MembersController@show')->name('members.show');
+Route::get('/members/resend/{invite_id}', 'MembersController@resendInvite')->name('members.resend_invite');
+Route::post('/members/{id}', 'MembersController@invite')->name('members.invite');
+Route::delete('/members/{id}/{user_id}', 'MembersController@destroy')->name('members.destroy');

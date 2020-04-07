@@ -42,17 +42,21 @@ class TeamsController extends Controller
      */
     public function store(Request $request)
     {
-       
-
-        $team = Team::create([
-            'name' => $request->name,
-            'owner_id' => $request->user()->getKey()
-        ]);
-        $user=User::find($team->owner_id);
-        $user->team_id=$team->id;
-        $user->save();
-
-        return redirect('/teams')->with('success', 'Team Saved');
+        
+        if(Team::latest()->where('owner_id',$request->user()->getKey())->first() == false){
+            $team = Team::create([
+                'name' => $request->name,
+                'owner_id' => $request->user()->getKey()
+            ]);
+            $user=User::find($team->owner_id);
+            $user->team_id=$team->id;
+            $user->save();
+    
+            return redirect('/teams')->with('success', 'Team Saved');
+        }else{
+            return redirect('/teams')->with('error', auth()->user()->name . ' have allready a team');
+        }
+        
         
     }
 

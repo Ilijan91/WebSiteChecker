@@ -50,6 +50,7 @@ class InviteController extends Controller
         }
 
         // create the user 
+        
        
 
         // delete the invite so it can't be used again
@@ -68,9 +69,16 @@ class InviteController extends Controller
         if (!$invite = Invite::where('deny_token', $token)->first()) {
             abort(404);
         } 
-        // delete the invite so it can't be used again
+        
+        $userDeclined=User::find($invite->user_id);
+        $declinedByUser=$invite;
+        Mail::to($userDeclined->email)->send(new InviteCreated($userDeclined,$declinedByUser));
+
         $invite->delete();
-        return 'Invite declined!';
+        return "You have declined invitation";;// moze neka lepsa strana za decline
+      
+       
+        
     }
 
 
