@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Session;
 
 class RegisterController extends Controller
 {
@@ -55,6 +56,7 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'notification_preference' => ['required'],
             
+            
         ]);
     }
 
@@ -66,11 +68,41 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'notification_preference' => implode(",", $data['notification_preference']),
-            'password' => Hash::make($data['password']),
-        ]);
+        $invite = session('invite');  
+        if($invite){
+            return User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'notification_preference' => implode(",", $data['notification_preference']),
+                'password' => Hash::make($data['password']),
+                'team_id'=>$invite->team_id,
+               
+            ]);    
+        }else{
+            return User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'notification_preference' => implode(",", $data['notification_preference']),
+                'password' => Hash::make($data['password']),
+            ]);    
+        }
+       
+        
+        
+
+       
+        
+    
+        
+    
+
+
+
+
+
+
     }
+
+
+    
 }

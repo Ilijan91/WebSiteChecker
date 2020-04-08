@@ -16,7 +16,7 @@ class InviteController extends Controller
 {
 
     public function __construct(){
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['accept', 'decline']]);
     }
 
     public function invite()
@@ -49,18 +49,31 @@ class InviteController extends Controller
             abort(404);
         }
 
-        // create the user 
+        $userValid=User::select()->where('email',$invite->email)->first();
+      
+        if(!empty($userValid)){
+       
+            $user = User::findOrFail($userValid->id);
+            $user->team_id = $invite->team_id;
+            $user->save();
+            $invite->delete(); 
+            if(auth()->check() == true){  
+                //if user is logedin in app in time when invite has been sent
+                return redirect()->route('teams.index');
+            }else{
+                //if not login
+                return redirect()->to('login');
+            }
+            
+        }else{
+            $invite->delete();
+            session(['invite' => $invite]);
+            return redirect()->to('register');
+        }
+        
+        
         
        
-
-        // delete the invite so it can't be used again
-        $invite->delete();
-
-        // log the user in and show them the public project
-
-        
-
-        return "invite accepted";
         
     }
 
@@ -69,16 +82,12 @@ class InviteController extends Controller
         if (!$invite = Invite::where('deny_token', $token)->first()) {
             abort(404);
         } 
-        
         $userDeclined=User::find($invite->user_id);
         $declinedByUser=$invite;
         Mail::to($userDeclined->email)->send(new InviteCreated($userDeclined,$declinedByUser));
 
         $invite->delete();
         return "You have declined invitation";;// moze neka lepsa strana za decline
-      
-       
-        
     }
 
 

@@ -40,8 +40,15 @@ class InviteCreated extends Mailable
                         ->view('emails.invite',compact('user','invite','team'));
         }else{
             $user=User::select()->where('email', $this->declinedByUser->email)->get();
-            return $this->from($user[0]->email)
-                        ->view('emails.deny',compact('user','team'));
+            
+            if(!empty($user[0])){
+                return $this->from($user[0]->email)
+                            ->view('emails.deny',compact('user','team'));
+            }else{
+               return $this->from($this->declinedByUser->email)
+                            ->view('emails.notRegistrated')->with('email',$this->declinedByUser->email); 
+            }
+            
         }
 
     }

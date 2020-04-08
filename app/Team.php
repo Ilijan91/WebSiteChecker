@@ -11,7 +11,7 @@ class Team extends Model
     protected $fillable = ['name', 'owner_id'];
 
     public function user(){
-        return $this->belongsTo('App\User');
+        return $this->belongsToMany('App\User');
     }
 
 

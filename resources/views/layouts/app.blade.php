@@ -88,7 +88,7 @@
                                 <a class="nav-link" href="/invite">Invite User</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/teams/create">Create team</a>
+                                <a class="nav-link" href="/teams">Team</a>
                             </li>
 
                             <li class="nav-item dropdown">
