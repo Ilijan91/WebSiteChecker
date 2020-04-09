@@ -29,13 +29,13 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if(is_null(auth()->user()->currentTeam) || auth()->user()->currentTeam->getKey() !== $team->getKey())
+                                        
                                             <a href="#" class="btn btn-sm btn-default">
                                                 <i class="fa fa-sign-in"></i> Switch
                                             </a>
-                                        @else
+                                        
                                             <span class="label label-default">Current team</span>
-                                        @endif
+                                      
 
                                         <a href="{{route('members.show', $team)}}" class="btn btn-sm btn-default">
                                             <i class="fa fa-users"></i> Members

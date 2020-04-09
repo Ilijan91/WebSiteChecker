@@ -49,4 +49,7 @@ class User extends Authenticatable
     {
         return config('app.slack_webhook');
     }
+    public function path(){
+        return url("/projects/{$this->hash}");
+    }
 }

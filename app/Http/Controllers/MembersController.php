@@ -78,6 +78,5 @@ class MembersController extends Controller
             ]);
         }
         return redirect(route('members.show', $team));
-         
     }
 }
