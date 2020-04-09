@@ -44,7 +44,7 @@ class User extends Authenticatable
     public function team(){
         return $this->hasOne('App\Team');
     }
-
+   
     public function routeNotificationForSlack($notification)
     {
         return config('app.slack_webhook');

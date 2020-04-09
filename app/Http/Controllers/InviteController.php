@@ -71,8 +71,6 @@ class InviteController extends Controller
             return redirect()->to('register');
         }
         
-        
-        
        
         
     }

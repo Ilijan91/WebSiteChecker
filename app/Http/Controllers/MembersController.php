@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
 use App\Team;
+use App\Invite;
+use App\Mail\InviteCreated;
+use Illuminate\Support\Facades\Mail;
 
 class MembersController extends Controller
 {
@@ -11,82 +15,39 @@ class MembersController extends Controller
     {
         $this->middleware('auth');
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        
-        $team = Team::findorFail($id);
-       
-        return view('members.list')->with('team',$team);
+        $users = User::select()->where('team_id',$id)->get();
+        $team=Team::select()->where('owner_id',$users[0]->id)->get();
+        $invites=Invite::all();
+
+        return view('members.list',compact('team','users','invites'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+   
+    public function destroy($team_id , $user_id)
     {
-        //
+        $team = Team::findOrFail($team_id);
+        if (auth()->user()->id != $team->owner_id) {
+            abort(403);
+        }
+        $user = User::findOrFail($user_id);
+        if ($user->getKey() === auth()->user()->getKey()) {
+            abort(403);
+        }
+        $user->team_id= null;
+        $user->save();
+
+        return redirect(route('teams.index'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function resendInvite($invite_id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $invite = Invite::findOrFail($invite_id);
+        $team=Team::find($invite->team_id);
+        Mail::to($invite->email)->send(new InviteCreated($invite));
+   
+        return redirect(route('members.show', $team));
     }
 }

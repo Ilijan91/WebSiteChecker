@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Edit Team:
+                <div class="card-header">Team List:
                     <span class="float-right"><a href="/teams" class="btn btn-secondary btn-sm float-right">Go back</a></span>
                 </div>
                 <div class="card-body">    
@@ -16,13 +16,13 @@
                             <th>Action</th>
                         </tr>
                         </thead>
-                        @foreach($team->users AS $user)
+                        @foreach($users as $user)
                             <tr>
                                 <td>{{$user->name}}</td>
                                 <td>
-                                    @if(auth()->user()->isOwnerOfTeam($team))
-                                        @if(auth()->user()->getKey() !== $user->getKey())
-                                            <form style="display: inline-block;" action="{{route('teams.members.destroy', [$team, $user])}}" method="post">
+                                    @if(auth()->user()->id == $team[0]->owner_id)
+                                        @if(auth()->user()->getKey() != $user->getKey())
+                                            <form style="display: inline-block;" action="{{route('members.destroy', [$team[0], $user])}}" method="post">
                                                 {!! csrf_field() !!}
                                                 <input type="hidden" name="_method" value="DELETE" />
                                                 <button class="btn btn-danger btn-sm"><i class="fa fa-trash-o"></i> Delete</button>
@@ -38,7 +38,7 @@
         </div>
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Edit Team:
+                <div class="card-header">Not responded to invite:
                     <span class="float-right"><a href="/teams" class="btn btn-secondary btn-sm float-right">Go back</a></span>
                 </div>
                 <div class="card-body">    
@@ -49,27 +49,27 @@
                             <th>Action</th>
                         </tr>
                         </thead>
-                        @foreach($team->invites AS $invite)
+                        @foreach($invites as $invite)
                             <tr>
                                 <td>{{$invite->email}}</td>
                                 <td>
-                                    <a href="{{route('teams.members.resend_invite', $invite)}}" class="btn btn-sm btn-default">
+                                    <a href="{{route('members.resend_invite', $invite)}}" class="btn btn-sm btn-default">
                                         <i class="fa fa-envelope-o"></i> Resend invite
                                     </a>
                                 </td>
                             </tr>
-                        @endforeach
+                            @endforeach
                     </table> 
                 </div>
             </div>
         </div>
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Edit Team:
+                <div class="card-header">Invite to Team:
                     <span class="float-right"><a href="/teams" class="btn btn-secondary btn-sm float-right">Go back</a></span>
                 </div>
                 <div class="card-body">    
-                    <form class="form-horizontal" method="post" action="{{route('teams.members.invite', $team)}}">
+                    <form class="form-horizontal" method="post" action="">
                         {!! csrf_field() !!}
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                             <label class="col-md-4 control-label">E-Mail Address</label>

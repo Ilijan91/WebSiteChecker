@@ -11,10 +11,6 @@ class Invite extends Model
     ];
 
 
-    
-
-
-
 
 
     
