@@ -65,11 +65,11 @@
         </div>
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Invite to Team:
+                <div class="card-header">Invite to {{$team[0]->name}}:
                     <span class="float-right"><a href="/teams" class="btn btn-secondary btn-sm float-right">Go back</a></span>
                 </div>
                 <div class="card-body">    
-                    <form class="form-horizontal" method="post" action="">
+                    <form class="form-horizontal" method="post" action="{{route('members.invite', $team[0])}}">
                         {!! csrf_field() !!}
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                             <label class="col-md-4 control-label">E-Mail Address</label>

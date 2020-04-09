@@ -8,6 +8,7 @@ use App\Team;
 use App\Invite;
 use App\Mail\InviteCreated;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class MembersController extends Controller
 {
@@ -49,5 +50,34 @@ class MembersController extends Controller
         Mail::to($invite->email)->send(new InviteCreated($invite));
    
         return redirect(route('members.show', $team));
+    }
+
+
+    public function invite(Request $request, $team_id)
+    {
+
+        $inviteMail = Invite::select()->where('email',$request->get('email'))->get();
+     
+        if(empty($inviteMail[0]) || $inviteMail[0]->email != $request->get('email')){
+            $team = Team::findOrFail($team_id);
+            $acceptToken = Str::random(16);
+            $denyToken = Str::random(16);
+       
+            $invite = Invite::create([
+                'email' => $request->get('email'),
+                'accept_token' => $acceptToken,
+                'deny_token' => $denyToken,
+                'user_id'=>auth()->user()->id,
+                'team_id'=>$team->id
+            ]);
+            // send the email
+            Mail::to($request->get('email'))->send(new InviteCreated($invite));
+        }else {
+            return redirect()->back()->withErrors([
+                'email' => 'The email address is already invited to the team.'
+            ]);
+        }
+        return redirect(route('members.show', $team));
+         
     }
 }
