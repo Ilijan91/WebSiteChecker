@@ -26,21 +26,29 @@ class InviteController extends Controller
 
     public function process(Request $request)
     {
-        $team=Team::select()->where('owner_id',auth()->user()->id)->get();
-        $acceptToken = Str::random(16);
-        $denyToken = Str::random(16);
-
-        $invite = Invite::create([
-            'email' => $request->get('email'),
-            'accept_token' => $acceptToken,
-            'deny_token' => $denyToken,
-            'user_id'=>auth()->user()->id,
-            'team_id'=>$team[0]->id
-        ]);
         
-        // send the email
-        Mail::to($request->get('email'))->send(new InviteCreated($invite));
-        return redirect()->back();
+        $team=Team::select()->where('owner_id',auth()->user()->id)->get();
+        if(!empty($team[0]->id)){
+            $acceptToken = Str::random(16);
+            $denyToken = Str::random(16);
+    
+            $invite = Invite::create([
+                'email' => $request->get('email'),
+                'accept_token' => $acceptToken,
+                'deny_token' => $denyToken,
+                'user_id'=>auth()->user()->id,
+                'team_id'=>$team[0]->id
+            ]);
+            
+            // send the email
+            Mail::to($request->get('email'))->send(new InviteCreated($invite));
+            return redirect()->back();
+        }else{
+            return redirect()->back()->withErrors([
+                'email' => 'Only owner of team can send invitations.'
+            ]);
+        }
+       
         }
 
     public function accept($token)

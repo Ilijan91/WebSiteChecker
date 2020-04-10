@@ -13,14 +13,11 @@
                 <div class="card-body">
                     @if(count($projects))
                     <ul class="list-group">
-                      
                         @foreach($projects as $project)
-                        @if(auth()->user()->team_id == $project->team_id)
-                          
+                          @if(auth()->user()->team_id == $project->team_id)
                             <li class="list-group-item"><a href="{{$project->path()}}">{{$project->name}}</a></li>
-                            @endif
+                          @endif
                         @endforeach
-                        
                     </ul>
                 @else
                   <p>No Projects Found</p>

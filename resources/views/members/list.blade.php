@@ -36,6 +36,7 @@
                 </div>
             </div>
         </div>
+        @if(auth()->user()->id == $team[0]->owner_id)
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">Not responded to invite:
@@ -95,5 +96,6 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
 @endsection
