@@ -18,6 +18,7 @@ class CreateCheckStatusesTable extends Migration
             $table->integer('url_id');
             $table->string('status');
             $table->string('reason');
+            $table->string('time');
             $table->timestamps();
         });
     }
