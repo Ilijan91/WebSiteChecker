@@ -17,6 +17,7 @@
                                     <hr>
                                         <li class="list-group-item">Last Checked: {{$status->updated_at->diffForHumans()}}</li>
                                         <li class="list-group-item">Last Status: {{$status->status}}</li>
+                                        <li class="list-group-item">Transfer Time: {{$status->time}}</li>
                                     @endforeach
                                 <hr>
                             @endforeach

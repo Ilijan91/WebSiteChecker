@@ -55,7 +55,7 @@ class CheckUrlStatus extends Command
                $this->saveStats($url);
             }else{
                 $checkFrequency=$url->check_frequency;
-                $currentTime= Carbon::parse(Carbon::now()->addSeconds(30));
+                $currentTime= Carbon::parse(Carbon::now()->addSeconds(15));
                 $updateTime=Carbon::parse($statusTime->updated_at);
                 $differenceInMinutes=$currentTime->diffInMinutes($updateTime);
                 //Log::debug($currentTime . ' and updated time is   ' . $updateTime . '    diference in minutes ' .$differenceInMinutes );
