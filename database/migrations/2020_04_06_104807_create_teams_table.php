@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCheckStatusesTable extends Migration
+class CreateTeamsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateCheckStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('check_statuses', function (Blueprint $table) {
-            $table->id();
-            $table->integer('url_id');
-            $table->string('status');
-            $table->string('reason');
-            $table->string('time');
+        Schema::create('teams', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('owner_id');
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateCheckStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('check_statuses');
+        Schema::dropIfExists('teams');
     }
 }

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Project;
 use App\Url;
+use App\User;
+use App\Team;
+
 use Illuminate\Support\Facades\Hash;
 
 
@@ -12,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 class ProjectsController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth', ['except' => ['index', 'show']]);
+        $this->middleware('auth', ['except' => ['show']]);
     }
     /**
      * Display a listing of the resource.
@@ -21,7 +24,12 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects=Project::orderBy('created_at','desc')->get();
+        
+       
+        $projects=User::select()
+                        ->join('teams','teams.id','=','users.team_id')
+                        ->join('projects','projects.user_id','=','users.id')
+                        ->get();
         
         return view('home',compact('projects'));
     }

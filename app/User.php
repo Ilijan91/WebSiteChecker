@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','notification_preference',
+        'name', 'email', 'password','notification_preference','team_id',
     ];
 
     /**
@@ -40,8 +40,16 @@ class User extends Authenticatable
     public function projects(){
         return $this->hasMany('App\Project');
     }
+
+    public function team(){
+        return $this->hasOne('App\Team');
+    }
+   
     public function routeNotificationForSlack($notification)
     {
         return config('app.slack_webhook');
+    }
+    public function path(){
+        return url("/projects/{$this->hash}");
     }
 }

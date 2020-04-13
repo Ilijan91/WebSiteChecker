@@ -10,8 +10,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-
-
+use GuzzleHttp\TransferStats;
 
 class CheckUrlStatus extends Command
 {
@@ -56,7 +55,7 @@ class CheckUrlStatus extends Command
                $this->saveStats($url);
             }else{
                 $checkFrequency=$url->check_frequency;
-                $currentTime= Carbon::parse(Carbon::now()->addSeconds(30));
+                $currentTime= Carbon::parse(Carbon::now()->addSeconds(15));
                 $updateTime=Carbon::parse($statusTime->updated_at);
                 $differenceInMinutes=$currentTime->diffInMinutes($updateTime);
                 //Log::debug($currentTime . ' and updated time is   ' . $updateTime . '    diference in minutes ' .$differenceInMinutes );
@@ -68,32 +67,39 @@ class CheckUrlStatus extends Command
     }
 
     private function saveStats($url){
-        try{
-            $client = new \GuzzleHttp\Client();
-            $request = $client->get($url->url);
-            $statusCode = $request->getStatusCode();
-            $statusReason= $request->getReasonPhrase();
-        }catch(RequestException $e){
-            if($e->getResponse()){
-                $statusCode = $e->getResponse()->getStatusCode();
-                $statusReason = $e->getResponse()->getReasonPhrase();
-            }else{
-                $statusCode=$e->gethandlerContext()['http_code'];
-                $statusReason=$e->gethandlerContext()['error'];
-            }
-        }
-        $statusSave= new CheckStatus();
-        $statusSave->url_id = $url->id;
-        $statusSave->status = $statusCode;
-        $statusSave->reason = $statusReason;
-        $statusSave->save();
+     
+        $client = new \GuzzleHttp\Client();
+           
+           $client->request('GET', $url->url, [
+            'http_errors' => false,
+            'on_stats' => function (TransferStats $stats) use ($url, $client){
+                try{
+                    $request = $client->get($url->url);
+                    $statusCode = $request->getStatusCode();
+                    $statusReason= $request->getReasonPhrase();
+                    $statusResponseTime= $stats->getTransferTime();
+                }catch(RequestException $e){
+                    if($e->getResponse()){
+                        $statusCode = $stats->getResponse()->getStatusCode();
+                        $statusReason = $stats->getResponse()->getReasonPhrase();
+                        $statusResponseTime= $stats->getTransferTime();
+                    }
+                }
+                $statusSave= new CheckStatus();
+                $statusSave->url_id = $url->id;
+                $statusSave->status = $statusCode;
+                $statusSave->reason = $statusReason;
+                $statusSave->time = $statusResponseTime;
+                $statusSave->save();  
 
-        $url=Url::find($url->id);
-        if($statusCode != 200 && $url->project->user->notification_preference != 'Do not notify'){
-            $user = $url->project->user;
-            $project=$url->project->name;
-            $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$statusReason,$project));
-        } 
+                $url=Url::find($url->id);
+                    if($statusCode != 200 && $url->project->user->notification_preference != 'Do not notify'){
+                        $user = $url->project->user;
+                        $project=$url->project->name;
+                        $user->notify(new \App\Notifications\ProjectDown($user,$url->url,$statusReason,$project));
+                    }  
+            }    
+        ]);
     }
 
     

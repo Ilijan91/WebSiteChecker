@@ -32,3 +32,23 @@ Route::get('markAsRead', function(){
     auth()->user()->unreadNotifications->markAsRead();
     return redirect()->back();
 })->name('markRead');
+
+// invite users to team
+Route::get('invite', 'InviteController@invite')->name('invite');
+Route::post('invite', 'InviteController@process')->name('process');
+Route::get('accept/{token}', 'InviteController@accept')->name('accept');
+Route::get('decline/{token}', 'InviteController@decline')->name('decline');
+
+
+Route::get('/teams', 'TeamsController@index')->name('teams.index');
+Route::get('/teams/create', 'TeamsController@create')->name('teams.create');
+Route::post('/teams', 'TeamsController@store')->name('teams.store');
+Route::get('/teams/edit/{id}', 'TeamsController@edit')->name('teams.edit');
+Route::put('/teams/edit/{id}', 'TeamsController@update')->name('teams.update');
+Route::delete('/teams/destroy/{id}', 'TeamsController@destroy')->name('teams.destroy');
+Route::get('/teams/switch/{id}', 'TeamsController@switchTeam')->name('teams.switch');
+
+Route::get('/members/{id}', 'MembersController@show')->name('members.show');
+Route::get('/members/resend/{invite_id}', 'MembersController@resendInvite')->name('members.resend_invite');
+Route::post('/members/{id}', 'MembersController@invite')->name('members.invite');
+Route::delete('/members/{id}/{user_id}', 'MembersController@destroy')->name('members.destroy');
